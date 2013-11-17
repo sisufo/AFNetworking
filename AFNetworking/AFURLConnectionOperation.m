@@ -529,16 +529,6 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification object:self];
     });
-    
-    if ([self isCancelled]) {
-        NSDictionary *userInfo = nil;
-        if ([self.request URL]) {
-            userInfo = [NSDictionary dictionaryWithObject:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
-        }
-        self.error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:userInfo];
-
-        [self finish];
-    }
 }
 
 - (void)finish {
@@ -569,10 +559,16 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
         userInfo = [NSDictionary dictionaryWithObject:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
     }
     NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:userInfo];
-    
-    if (![self isFinished] && self.connection) {
-        [self.connection cancel];
-        [self performSelector:@selector(connection:didFailWithError:) withObject:self.connection withObject:error];
+
+    if (![self isFinished]) {
+        if (self.connection) {
+            [self.connection cancel];
+            [self performSelector:@selector(connection:didFailWithError:) withObject:self.connection withObject:error];
+        } else {
+            // If 'cancel' is called immediately after 'start', there is a race condition where self.connection has not yet been instantiated. We still want the callback to go through and the error to be set.
+            self.error = error;
+            [self finish];
+        }
     }
 }
 
