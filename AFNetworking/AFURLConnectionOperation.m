@@ -454,7 +454,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     [self.lock lock];
     
     if ([self isExecuting]) {
-        [self.connection performSelector:@selector(cancel) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
+        [self performSelector:@selector(operationDidPause) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -463,6 +463,14 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     }
     
     self.state = AFOperationPausedState;
+    
+    [self.lock unlock];
+}
+
+- (void)operationDidPause {
+    [self.lock lock];
+    
+    [self.connection cancel];
     
     [self.lock unlock];
 }
