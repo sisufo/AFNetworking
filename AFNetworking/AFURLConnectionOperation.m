@@ -19,7 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 #import "AFURLConnectionOperation.h"
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
@@ -27,7 +26,7 @@
 #endif
 
 #ifdef ServerDoesnotSendGZIPEncoding
-#import "NSData+BRLGzip.h"
+#import "NSData+Gzip.h"
 #endif
 
 #if !__has_feature(objc_arc)

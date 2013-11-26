@@ -4,6 +4,16 @@
    <Group
       location = "group:AFNetworking"
       name = "AFNetworking">
+      <Group
+         location = "group:Gzip"
+         name = "Gzip">
+         <FileRef
+            location = "group:NSData+Gzip.h">
+         </FileRef>
+         <FileRef
+            location = "group:NSData+Gzip.m">
+         </FileRef>
+      </Group>
       <FileRef
          location = "group:AFHTTPClient.h">
       </FileRef>
