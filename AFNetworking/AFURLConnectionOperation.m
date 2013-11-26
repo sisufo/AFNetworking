@@ -764,7 +764,7 @@ didReceiveResponse:(NSURLResponse *)response
     if ([[[[self request] URL] path] hasSuffix:@"gzip" ] && [data length] > 3) {
         const char gzipHeader[] = {0x1f,0x8b,0x08};
         char dataHeader[3] = {0};
-        DebugLog(@"sizeof(dataHeader):%ld", sizeof(dataHeader));
+        NSLog(@"sizeof(dataHeader):%ld", sizeof(dataHeader));
         [data getBytes:(void *)dataHeader length:sizeof(dataHeader)];
         gzipped = (0 == memcmp(gzipHeader, dataHeader, sizeof(dataHeader)));
     }
