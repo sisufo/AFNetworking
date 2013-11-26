@@ -26,6 +26,10 @@
 #import <UIKit/UIKit.h>
 #endif
 
+#ifdef ServerDoesnotSendGZIPEncoding
+#import "NSData+BRLGzip.h"
+#endif
+
 #if !__has_feature(objc_arc)
 #error AFNetworking must be built with ARC.
 // You can turn on ARC for only AFNetworking files by adding -fobjc-arc to the build phase for each of its files.
@@ -755,7 +759,24 @@ didReceiveResponse:(NSURLResponse *)response
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection __unused *)connection {
+#ifdef ServerDoesnotSendGZIPEncoding
+    BOOL gzipped = NO;
+    NSData *data = [self.outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
+    if ([[[[self request] URL] path] hasSuffix:@"gzip" ] && [data length] > 3) {
+        const char gzipHeader[] = {0x1f,0x8b,0x08};
+        char dataHeader[3] = {0};
+        DebugLog(@"sizeof(dataHeader):%ld", sizeof(dataHeader));
+        [data getBytes:(void *)dataHeader length:sizeof(dataHeader)];
+        gzipped = (0 == memcmp(gzipHeader, dataHeader, sizeof(dataHeader)));
+    }
+    if (gzipped) {
+        self.responseData = [data dataByGzipUncompressing];
+    } else {
+        self.responseData = data;
+    }
+#else
     self.responseData = [self.outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
+#endif
     
     [self.outputStream close];
     
