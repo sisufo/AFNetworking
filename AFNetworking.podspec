@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.homepage = 'https://github.com/AFNetworking/AFNetworking'
   s.authors  = { 'Mattt Thompson' => 'm@mattt.me', 'Scott Raymond' => 'sco@gowalla.com' }
   s.source   = { :git => 'https://github.com/AFNetworking/AFNetworking.git', :tag => '1.3.3' }
-  s.source_files = 'AFNetworking'
+  s.source_files = {'AFNetworking', 'GZip'}
   s.requires_arc = true
 
   s.ios.deployment_target = '5.0'
