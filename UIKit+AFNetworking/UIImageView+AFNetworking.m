@@ -113,6 +113,7 @@ static char kAFResponseSerializerKey;
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
 
     [self setImageWithURLRequest:request placeholderImage:placeholderImage success:nil failure:nil];
 }
