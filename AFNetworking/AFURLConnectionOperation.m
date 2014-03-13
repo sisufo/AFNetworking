@@ -734,17 +734,21 @@ didReceiveResponse:(NSURLResponse *)response
 
             NSInteger numberOfBytesWritten = 0;
             while (totalNumberOfBytesWritten < length) {
-                numberOfBytesWritten = [self.outputStream write:&dataBuffer[0] maxLength:length];
+                numberOfBytesWritten = [self.outputStream write:&dataBuffer[(NSUInteger)totalNumberOfBytesWritten] maxLength:(length - (NSUInteger)totalNumberOfBytesWritten)];
                 if (numberOfBytesWritten == -1) {
-                    [self.connection cancel];
-                    [self performSelector:@selector(connection:didFailWithError:) withObject:self.connection withObject:self.outputStream.streamError];
-                    return;
-                } else {
-                    totalNumberOfBytesWritten += numberOfBytesWritten;
+                    break;
                 }
+                
+                totalNumberOfBytesWritten += numberOfBytesWritten;
             }
-
+            
             break;
+        }
+        
+        if (self.outputStream.streamError) {
+            [self.connection cancel];
+            [self performSelector:@selector(connection:didFailWithError:) withObject:self.connection withObject:self.outputStream.streamError];
+            return;
         }
     }
     
