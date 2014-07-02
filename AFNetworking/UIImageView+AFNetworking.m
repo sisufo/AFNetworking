@@ -153,7 +153,9 @@ static char kAFImageRequestOperationObjectKey;
 }
 
 - (void)cancelImageRequestOperation {
-    [self.af_imageRequestOperation cancel];
+    if (!self.af_imageRequestOperation.isReady) {
+        [self.af_imageRequestOperation cancel];
+    }
     self.af_imageRequestOperation = nil;
 }
 
